@@ -1,0 +1,274 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiesta de la Antioqueñidad INEM 2025 - Municipio de La Pintada</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+        header {
+            background: linear-gradient(135deg, #006400, #ffffff);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://via.placeholder.com/50x50?text=☕') repeat;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        header h1, header p {
+            position: relative;
+            z-index: 1;
+        }
+        header h1 {
+            font-size: 2.5em;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeIn 2s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        nav {
+            background-color: #006400;
+            padding: 10px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            padding: 10px;
+            display: inline-block;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #ffd700;
+            transition: width 0.3s ease;
+        }
+        nav a:hover::after {
+            width: 100%;
+        }
+        nav a:hover {
+            color: #ffd700;
+            transform: translateY(-2px);
+        }
+        section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            animation: slideUp 1s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h2 {
+            color: #006400;
+            border-bottom: 2px solid #006400;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(to right, #006400, transparent);
+            animation: slideRight 2s infinite;
+        }
+        @keyframes slideRight {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(0); }
+            100% { transform: translateX(100%); }
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .gallery img {
+            width: 100%;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .gallery img:hover {
+            transform: scale(1.05) rotate(1deg);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        footer {
+            background-color: #006400;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            position: relative;
+        }
+        footer::before {
+            content: '☕';
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 2em;
+            opacity: 0.3;
+        }
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+            nav {
+                padding: 5px;
+            }
+            nav a {
+                display: block;
+                margin: 10px 0;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>FIESTA DE LA ANTIOQUEÑIDAD INEM 2025</h1>
+        <p>Reflejando el espíritu paisa en el Municipio de La Pintada</p>
+    </header>
+    
+    <nav>
+        <a href="#antioquenidad">Antioqueñidad</a>
+        <a href="#la-pintada">La Pintada</a>
+        <a href="#eventos">Eventos</a>
+        <a href="#galeria">Galería</a>
+    </nav>
+    
+    <section id="antioquenidad">
+        <h2>¿Qué es la Antioqueñidad?</h2>
+        <p>La Antioqueñidad es el alma de un pueblo forjado en las montañas de Antioquia, donde el verde de los cafetales y el blanco de la pureza se entrelazan en nuestra bandera. Es la celebración de nuestra independencia, conmemorado cada 11 de agosto, y un homenaje a la resiliencia de los paisas, quienes con trabajo arduo, ingenio y hospitalidad han construido una identidad única. Desde las trovas que resuenan en las fondas hasta los coloridos desfiles de silleteros en la Feria de las Flores, la Antioqueñidad es sinónimo de orgullo, tradición y comunidad.</p>
+        <p>En la "FIESTA DE LA ANTIOQUEÑIDAD INEM 2025", invitamos a las nuevas generaciones a redescubrir estas raíces a través de un evento vibrante que fusiona lo tradicional con lo moderno. Ven y vive la esencia de nuestra tierra, donde el aroma del café, la calidez de la gente y el eco de las montañas te harán sentir en casa.</p>
+    </section>
+    
+    <section id="la-pintada">
+        <h2>El Municipio de La Pintada</h2>
+        <p>La Pintada, joya del suroeste antioqueño a solo 79 km de Medellín, es un rincón de clima cálido donde el Río Cauca abraza la tierra con su majestuosidad. Con una altitud de 600 metros, este municipio fundado en 1867 es un reflejo de la Antioqueñidad: sus calles están impregnadas de historias de arrieros, sus fincas cafeteras exhalan el aroma del trabajo paisa, y sus paisajes naturales, como las piscinas de Los Farallones, invitan a la aventura y la contemplación. El Parque Principal, corazón del pueblo, late al ritmo de las fiestas populares, donde la trova, el fandango y el carriel son protagonistas.</p>
+        <p>En la "FIESTA DE LA ANTIOQUEÑIDAD INEM 2025", La Pintada se viste de gala para ser el epicentro de la celebración. Descubre sus encantos, desde los senderos junto al río hasta los sabores de la bandeja paisa y el café recién molido, en un evento que une pasado y presente en un abrazo antioqueño.</p>
+    </section>
+    
+    <section id="eventos">
+        <h2>Eventos y Actividades</h2>
+        <p>La "FIESTA DE LA ANTIOQUEÑIDAD INEM 2025" trae un programa lleno de vida y tradición para todas las edades. Sumérgete en la cultura paisa con actividades que celebran nuestra herencia y proyectan nuestra identidad hacia el futuro:</p>
+        <ul>
+            <li><strong>Desfiles de silleteros y autos clásicos</strong>: Admira las coloridas silletas cargadas de flores que representan el legado de los campesinos antioqueños, junto a los emblemáticos vehículos que evocan la época de la colonización.</li>
+            <li><strong>Presentaciones de trovas y música paisa</strong>: Disfruta de los trovadores que, con su ingenio y humor, narran historias en verso, acompañados por ritmos tradicionales como el bambuco y la guasca.</li>
+            <li><strong>Talleres culturales sobre la historia de Antioquia</strong>: Aprende sobre la colonización antioqueña, la independencia y el impacto de la cultura cafetera en talleres interactivos para jóvenes y adultos.</li>
+            <li><strong>Exposiciones de arte y gastronomía local</strong>: Explora obras de artistas locales y degusta platos típicos como la bandeja paisa, arepas de choclo y postres tradicionales.</li>
+            <li><strong>Actividades recreativas junto al Río Cauca</strong>: Participa en caminatas ecológicas, paseos en bote y actividades al aire libre que conectan con la naturaleza vibrante de La Pintada.</li>
+        </ul>
+        <p>¡No te pierdas esta celebración única! Únete a la "FIESTA DE LA ANTIOQUEÑIDAD INEM 2025" y vive la pasión, el orgullo y la alegría de ser antioqueño.</p>
+    </section>
+    
+    <section id="galeria">
+        <h2>Galería</h2>
+        <div class="gallery">
+            <img src="images.jpeg" alt="Bandera de Antioquia">
+            <img src="maxresdefault.jpg" alt="Río Cauca en La Pintada">
+            <img src="M25NF4OMUVGSRIDVOPMRPBF6SY.avif" alt="Desfile de Silleteros">
+            <img src="LaPintada2.jpg" alt="Parque Principal de La Pintada">
+        </div>
+    </section>
+    
+    <footer>
+        <p>&copy; 2025 Fiesta de la Antioqueñidad INEM - Municipio de La Pintada. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
